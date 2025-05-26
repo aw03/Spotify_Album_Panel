@@ -38,17 +38,3 @@ def get_token_header():
 
     return headers
 
-def get_recently_played_tracks():
-    try:
-        response = requests.get(
-            "https://api.spotify.com/v1/me/player/recently-played",
-            headers=token_header)
-    except:
-        token_header = get_token_header()
-        response = requests.get(
-            "https://api.spotify.com/v1/me/player/recently-played",
-            headers=token_header)
-    return response
-
-print(get_recently_played_tracks().reason)
-

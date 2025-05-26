@@ -1,53 +1,49 @@
+document.getElementById("login").addEventListener("click", async () => {
+    const generateRandomString = (length) => {
+      const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+      const values = crypto.getRandomValues(new Uint8Array(length));
+      return values.reduce((acc, x) => acc + possible[x % possible.length], "");
+    }
 
-const generateRandomString = (length) => {
-    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    const values = crypto.getRandomValues(new Uint8Array(length));
-    return values.reduce((acc, x) => acc + possible[x % possible.length], "");
-  }
-  
-const codeVerifier  = generateRandomString(64);
+    const codeVerifier = generateRandomString(64);
 
-const sha256 = async (plain) => {
-    const encoder = new TextEncoder()
-    const data = encoder.encode(plain)
-    return window.crypto.subtle.digest('SHA-256', data)
-  }
-  
-const base64encode = (input) => {
-    return btoa(String.fromCharCode(...new Uint8Array(input)))
-      .replace(/=/g, '')
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_');
-  }
-  
+    const sha256 = async (plain) => {
+      const encoder = new TextEncoder();
+      const data = encoder.encode(plain);
+      return await window.crypto.subtle.digest('SHA-256', data);
+    }
 
-const hashed = await sha256(codeVerifier)
-const codeChallenge = base64encode(hashed);
+    const base64encode = (input) => {
+      return btoa(String.fromCharCode(...new Uint8Array(input)))
+        .replace(/=/g, '')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_');
+    }
 
-// Load environment variables from .env file
-require('dotenv').config();
+    const hashed = await sha256(codeVerifier);
+    const codeChallenge = base64encode(hashed);
 
-// Access environment variables
-const clientId = process.env.CLIENT_ID;
-  
-// const clientId = 'YOUR_CLIENT_ID';
-const redirectUri = 'http://localhost:8080';
+    // Save verifier in local storage for later
+    window.localStorage.setItem('code_verifier', codeVerifier);
 
-const scope = 'user-read-private user-read-email';
-const authUrl = new URL("https://accounts.spotify.com/authorize")
+    const clientId = "fa7e3da5eaf04cafae56a7e91d657d50"; 
+    const redirectUri = "http://localhost:3000/panel";
+    const scope = "user-read-private user-read-email";
 
-// generated in the previous step
-window.localStorage.setItem('code_verifier', codeVerifier);
+    const authUrl = new URL("https://accounts.spotify.com/authorize");
+    const params = {
+      response_type: 'code',
+      client_id: clientId,
+      scope,
+      code_challenge_method: 'S256',
+      code_challenge: codeChallenge,
+      redirect_uri: redirectUri,
+    };
 
-const params =  {
-    response_type: 'code',
-    client_id: clientId,
-    scope,
-    code_challenge_method: 'S256',
-    code_challenge: codeChallenge,
-    redirect_uri: redirectUri,
-}
+    authUrl.search = new URLSearchParams(params).toString();
+    window.location.href = authUrl.toString();
 
-authUrl.search = new URLSearchParams(params).toString();
-window.location.href = authUrl.toString();
-
+    const urlParams = new URLSearchParams(window.location.search);
+    let code = urlParams.get('code');
+    print(code);
+  });
