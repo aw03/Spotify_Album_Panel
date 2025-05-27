@@ -44,9 +44,41 @@ async function getRecentlyPlayed(token,limit) {
     if (!response.ok) {
         const errorData = await response.json();
         document.getElementById("recently-played-tracks").textContent = `Error Number: ${errorData.error.status}, error message ${errorData.error.message}`;
+        if (errorData.error.status == 401) {
+
+        }
         return;
     }
   
     const data = await response.json();
     return data;
   }
+
+  const getRefreshToken = async () => {
+
+    // refresh token that has been previously stored
+    const refreshToken = JSON.stringify(token.refresh_token,null,2);
+    const url = "https://accounts.spotify.com/api/token";
+ 
+     const payload = {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'application/x-www-form-urlencoded'
+       },
+       body: new URLSearchParams({
+         grant_type: 'refresh_token',
+         refresh_token: refreshToken,
+         client_id: clientId
+       }),
+     }
+     const body = await fetch(url, payload);
+     const response = await body.json();
+ 
+     if (response.refresh_token) {
+       token = response;
+     } else {
+        refresh_tok = token.refresh_token;
+        token = response;
+        token.refresh_token = refresh_tok
+     }
+   }
