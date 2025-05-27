@@ -1,6 +1,7 @@
 const clientId =  "fa7e3da5eaf04cafae56a7e91d657d50";
 const redirectUri = "http://localhost:3000/panel";
 let token;
+let recent_tracks;
 
 window.addEventListener("DOMContentLoaded", async () => {
   const code = new URLSearchParams(window.location.search).get("code");
@@ -23,10 +24,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     }) 
   });
   token = await response.json();
-  let recent_tracks = await getRecentlyPlayed(25);
-  document.getElementById("recently-played-tracks").textContent = JSON.stringify(recent_tracks, null, 2);
-
-  
+  let raw_tracks = await getRecentlyPlayed(25);
+//   document.getElementById("recently-played-tracks").textContent = JSON.stringify(raw_tracks, null, 2);
+  recent_tracks = parseRecentTracks(raw_tracks)
+  document.getElementById("recently-played-tracks").textContent = JSON.stringify(recent_tracks, null, 2)
 });
 
 async function getRecentlyPlayed(limit) {
@@ -82,3 +83,10 @@ async function getRecentlyPlayed(limit) {
      return;
    }
 
+const parseRecentTracks = recent_tracks => {
+    let raw_tracks_list = recent_tracks.items;
+    let tracks_list = raw_tracks_list.map(hist => ({"id" : hist.track.album.id , 
+    "img_url": hist.track.album.images[0].url, "height":hist.track.album.images[0].height,
+    "width":hist.track.album.images[0].width }));
+    return tracks_list
+}
