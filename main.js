@@ -29,7 +29,7 @@ document.getElementById("login").addEventListener("click", async () => {
     // Save verifier in local storage for later
     window.localStorage.setItem('code_verifier', codeVerifier);
 
-    const scope = "user-read-private user-read-email";
+    const scope = "user-read-recently-played";
 
     const authUrl = new URL("https://accounts.spotify.com/authorize");
     const params = {
