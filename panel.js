@@ -26,8 +26,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   token = await response.json();
   let raw_tracks = await getRecentlyPlayed(25);
 //   document.getElementById("recently-played-tracks").textContent = JSON.stringify(raw_tracks, null, 2);
-  recent_tracks = parseRecentTracks(raw_tracks)
-  document.getElementById("recently-played-tracks").textContent = JSON.stringify(recent_tracks, null, 2)
+  recent_tracks = parseRecentTracks(raw_tracks);
+//   document.getElementById("recently-played-tracks").textContent = JSON.stringify(recent_tracks, null, 2);
+  displayImages(recent_tracks);
 });
 
 async function getRecentlyPlayed(limit) {
@@ -83,10 +84,20 @@ async function getRecentlyPlayed(limit) {
      return;
    }
 
-const parseRecentTracks = recent_tracks => {
-    let raw_tracks_list = recent_tracks.items;
+const parseRecentTracks = raw_tracks => {
+    let raw_tracks_list = raw_tracks.items;
     let tracks_list = raw_tracks_list.map(hist => ({"id" : hist.track.album.id , 
     "img_url": hist.track.album.images[0].url, "height":hist.track.album.images[0].height,
     "width":hist.track.album.images[0].width }));
     return tracks_list
+}
+
+const displayImages = (tracks) => {
+      tracks.forEach(track => {
+        const img = document.createElement("img");
+        img.src = track.img_url;
+        img.alt = track.id;
+        document.getElementById("image-container").appendChild(img);
+      });
+      
 }
