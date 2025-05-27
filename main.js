@@ -1,3 +1,6 @@
+const clientId = "fa7e3da5eaf04cafae56a7e91d657d50"; 
+const redirectUri = "http://localhost:3000/panel";
+
 document.getElementById("login").addEventListener("click", async () => {
     const generateRandomString = (length) => {
       const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -26,8 +29,6 @@ document.getElementById("login").addEventListener("click", async () => {
     // Save verifier in local storage for later
     window.localStorage.setItem('code_verifier', codeVerifier);
 
-    const clientId = "fa7e3da5eaf04cafae56a7e91d657d50"; 
-    const redirectUri = "http://localhost:3000/panel";
     const scope = "user-read-private user-read-email";
 
     const authUrl = new URL("https://accounts.spotify.com/authorize");
@@ -42,8 +43,4 @@ document.getElementById("login").addEventListener("click", async () => {
 
     authUrl.search = new URLSearchParams(params).toString();
     window.location.href = authUrl.toString();
-
-    const urlParams = new URLSearchParams(window.location.search);
-    let code = urlParams.get('code');
-    print(code);
   });
