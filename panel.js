@@ -22,17 +22,14 @@ window.addEventListener("DOMContentLoaded", async () => {
       code_verifier: codeVerifier,
     }) 
   });
-
   token = await response.json();
-  document.getElementById("token-display").textContent = JSON.stringify(token.access_token, null, 2);
-
-  recent_tracks = await getRecentlyPlayed(token,25);
+  let recent_tracks = await getRecentlyPlayed(25);
   document.getElementById("recently-played-tracks").textContent = JSON.stringify(recent_tracks, null, 2);
 
   
 });
 
-async function getRecentlyPlayed(token,limit) {
+async function getRecentlyPlayed(limit) {
     let url = `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`
     const response = await fetch(url, {
       method: "GET",
@@ -43,10 +40,11 @@ async function getRecentlyPlayed(token,limit) {
   
     if (!response.ok) {
         const errorData = await response.json();
-        document.getElementById("recently-played-tracks").textContent = `Error Number: ${errorData.error.status}, error message ${errorData.error.message}`;
-        if (errorData.error.status == 401) {
-
+        if (errorData.error.status == 401) { 
+            await refreshToken();
+            return await getRecentlyPlayed(limit); // THIS PART IS SPOOKY BE CAREFULL
         }
+        document.getElementById("recently-played-tracks").textContent = `Error Number: ${errorData.error.status}, error message ${errorData.error.message}`;
         return;
     }
   
@@ -54,7 +52,7 @@ async function getRecentlyPlayed(token,limit) {
     return data;
   }
 
-  const getRefreshToken = async () => {
+  const refreshToken = async () => {
 
     // refresh token that has been previously stored
     const refreshToken = JSON.stringify(token.refresh_token,null,2);
@@ -79,6 +77,8 @@ async function getRecentlyPlayed(token,limit) {
      } else {
         refresh_tok = token.refresh_token;
         token = response;
-        token.refresh_token = refresh_tok
+        token.refresh_token = refresh_tok;
      }
+     return;
    }
+
