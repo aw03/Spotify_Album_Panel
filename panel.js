@@ -24,27 +24,27 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
 
   token = await response.json();
-  document.getElementById("token-display").textContent = JSON.stringify(token, null, 2);
+  document.getElementById("token-display").textContent = JSON.stringify(token.access_token, null, 2);
 
-  recent_tracks = await getRecentlyPlayed(token);
+  recent_tracks = await getRecentlyPlayed(token,25);
   document.getElementById("recently-played-tracks").textContent = JSON.stringify(recent_tracks, null, 2);
 
   
 });
 
-async function getRecentlyPlayed(token) {
-    const response = await fetch("https://api.spotify.com/v1/me/player/recently-played", {
+async function getRecentlyPlayed(token,limit) {
+    let url = `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`
+    const response = await fetch(url, {
       method: "GET",
       headers: {
-        "Authorization": `Bearer ${token.get(access_token)}`
+        "Authorization": `Bearer ${token.access_token}`
       }
     });
   
     if (!response.ok) {
-    //  
-        document.getElementById("recently-played-tracks").textContent = response.error.message;
-        throw new Error(`Spotify API error: ${response.status}`);
-        // return response.error
+        const errorData = await response.json();
+        document.getElementById("recently-played-tracks").textContent = `Error Number: ${errorData.error.status}, error message ${errorData.error.message}`;
+        return;
     }
   
     const data = await response.json();
