@@ -1,15 +1,17 @@
 body {
     font-family: sans-serif;
-    background-color: #f8f8f8;
+    background-color: #000000;
     margin: 0;
     padding: 20px;
     text-align: center;
   }
   
-  h1 {
-    margin-bottom: 20px;
-  }
-  
+  .titles {
+    color : white;
+    font-family: monaco,Consolas,Lucida Console,monospace; 
+}
+
+
   .gallery {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
