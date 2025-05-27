@@ -2,6 +2,8 @@ const clientId =  "fa7e3da5eaf04cafae56a7e91d657d50";
 const redirectUri = "http://localhost:3000/panel";
 let token;
 let recent_tracks;
+const image_limit = 36;
+
 
 window.addEventListener("DOMContentLoaded", async () => {
   const code = new URLSearchParams(window.location.search).get("code");
@@ -24,7 +26,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     }) 
   });
   token = await response.json();
-  let raw_tracks = await getRecentlyPlayed(25);
+  let raw_tracks = await getRecentlyPlayed(image_limit);
 //   document.getElementById("recently-played-tracks").textContent = JSON.stringify(raw_tracks, null, 2);
   recent_tracks = parseRecentTracks(raw_tracks);
 //   document.getElementById("recently-played-tracks").textContent = JSON.stringify(recent_tracks, null, 2);
@@ -97,6 +99,8 @@ const displayImages = (tracks) => {
         const img = document.createElement("img");
         img.src = track.img_url;
         img.alt = track.id;
+        img.height = 250;
+        img.width = 250; 
         document.getElementById("image-container").appendChild(img);
       });
       

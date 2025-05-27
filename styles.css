@@ -1,0 +1,36 @@
+body {
+    font-family: sans-serif;
+    background-color: #f8f8f8;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  h1 {
+    margin-bottom: 20px;
+  }
+  
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 10px;
+  }
+  
+  .gallery img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  
+  .gallery img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  }
+  
