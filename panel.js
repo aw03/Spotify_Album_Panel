@@ -10,7 +10,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const codeVerifier = localStorage.getItem("code_verifier");
 
   if (!code || !codeVerifier) {
-    document.getElementById("token-display").textContent = "Missing code or verifier.";
+    document.getElementById("recently-played-tracks").textContent += "Missing code or verifier.";
     return;
   }
 
@@ -26,15 +26,30 @@ window.addEventListener("DOMContentLoaded", async () => {
     }) 
   });
   token = await response.json();
-  let raw_tracks = await getRecentlyPlayed(image_limit);
-//   document.getElementById("recently-played-tracks").textContent = JSON.stringify(raw_tracks, null, 2);
+
+  if (!response.ok)
+  {
+  
+    document.getElementById("recently-played-tracks").textContent += "Could not fetch token\n";
+    document.getElementById("recently-played-tracks").textContent += `Error Number: ${token.error.status}, Error Message: ${token.error.message}\n`;
+    return;
+  }
+
+  let raw_tracks = await fetchRecentTracks(image_limit);
   recent_tracks = parseRecentTracks(raw_tracks);
-//   document.getElementById("recently-played-tracks").textContent = JSON.stringify(recent_tracks, null, 2);
   displayImages(recent_tracks);
 });
 
-async function getRecentlyPlayed(limit) {
-    let url = `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`
+async function fetchRecentTracks(limit, before = 0) {
+    let url;
+    if (before == 0) {
+      url = `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}`;
+    }
+    else
+    {
+      url = `https://api.spotify.com/v1/me/player/recently-played?limit=${limit}&before=${before}`;
+    }
+    
     const response = await fetch(url, {
       method: "GET",
       headers: {
@@ -45,10 +60,15 @@ async function getRecentlyPlayed(limit) {
     if (!response.ok) {
         const errorData = await response.json();
         if (errorData.error.status == 401) { 
-            await refreshToken();
-            return await getRecentlyPlayed(limit); // THIS PART IS SPOOKY BE CAREFULL
+            if (!(await refreshToken()))
+            {
+              document.getElementById("recently-played-tracks").textContent += "Could not refresh token\n";
+              document.getElementById("recently-played-tracks").textContent += `Error Number: ${errorData.error.status}, Error Message ${errorData.error.message}`;
+              return;
+            }
+            return await fetchRecentTracks(limit); // THIS PART IS SPOOKY BE CAREFULL
         }
-        document.getElementById("recently-played-tracks").textContent = `Error Number: ${errorData.error.status}, error message ${errorData.error.message}`;
+        document.getElementById("recently-played-tracks").textContent += `Error Number: ${errorData.error.status}, Error Message: ${errorData.error.message}`;
         return;
     }
   
@@ -56,42 +76,40 @@ async function getRecentlyPlayed(limit) {
     return data;
   }
 
-  const refreshToken = async () => {
-
-    // refresh token that has been previously stored
-    const refreshToken = JSON.stringify(token.refresh_token,null,2);
-    const url = "https://accounts.spotify.com/api/token";
- 
-     const payload = {
-       method: 'POST',
-       headers: {
-         'Content-Type': 'application/x-www-form-urlencoded'
-       },
-       body: new URLSearchParams({
-         grant_type: 'refresh_token',
-         refresh_token: refreshToken,
-         client_id: clientId
-       }),
-     }
-     const body = await fetch(url, payload);
-     const response = await body.json();
- 
-     if (response.refresh_token) {
-       token = response;
-     } else {
-        refresh_tok = token.refresh_token;
-        token = response;
-        token.refresh_token = refresh_tok;
-     }
-     return;
-   }
-
 const parseRecentTracks = raw_tracks => {
+    if (typeof raw_tracks == "undefined")
+    {
+      return [];
+    }
     let raw_tracks_list = raw_tracks.items;
-    let tracks_list = raw_tracks_list.map(hist => ({"id" : hist.track.album.id , 
+    let tracks = raw_tracks_list.map(hist => ({"id" : hist.track.album.id , 
     "img_url": hist.track.album.images[0].url, "height":hist.track.album.images[0].height,
     "width":hist.track.album.images[0].width }));
-    return tracks_list
+    return tracks;
+}
+
+async function getRecentlyPlayedTracks(limit) {
+  let api_response;
+  let next_pointer = 0;
+  let tracks = {};
+  
+  while (Object.keys(tracks).length < image_limit)
+  {
+    api_response = await fetchRecentTracks(limit,next_pointer);
+    console.log(Object.keys(tracks).length);
+    console.log(next_pointer)
+    console.log(api_response)
+    next_pointer = api_response.cursors.before;
+    parseRecentTracks(api_response).forEach(track =>
+      {
+        if (!(track.id in tracks))
+        {
+          tracks[track.id] = track;
+        }
+      })
+    console.log(Object.keys(tracks).length);
+  }
+  return Object.values(tracks)
 }
 
 const displayImages = (tracks) => {
@@ -105,3 +123,39 @@ const displayImages = (tracks) => {
       });
       
 }
+
+
+const refreshToken = async () => {
+
+  // refresh token that has been previously stored
+  const refreshToken = JSON.stringify(token.refresh_token,null,2);
+  const url = "https://accounts.spotify.com/api/token";
+
+    const payload = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token',
+        refresh_token: refreshToken,
+        client_id: clientId
+      }),
+    }
+    const response_body = await fetch(url, payload);
+    if (!response_body.ok)
+    {
+      return false;
+    }
+
+    const response = await response_body.json();
+
+    if (response.refresh_token) {
+      token = response;
+    } else {
+      refresh_tok = token.refresh_token;
+      token = response;
+      token.refresh_token = refresh_tok;
+    }
+    return true;
+  }
