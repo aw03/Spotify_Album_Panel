@@ -2,4 +2,4 @@
 
 ## How to run
 
-$$ npx serve .
+``` npx serve . ```

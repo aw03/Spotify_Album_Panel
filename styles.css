@@ -3,6 +3,7 @@ body {
     background-color: #000000;
     margin: 0;
     padding: 20px;
+    place-items: center;
     text-align: center;
   }
   
@@ -35,4 +36,90 @@ body {
     transform: scale(1.05);
     box-shadow: 0 6px 15px rgba(0,0,0,0.15);
   }
-  
+
+  /* ====== Auth page styles (reuses your theme) ====== */
+
+/* Center the page content */
+.index-body {
+  min-height: 100vh;
+  background-color: #000; /* already set in your file */
+  padding: 10px 20px;
+  display: grid;
+
+}
+
+/* Title: match the gallery page look */
+
+.auth-card {
+  color: #fff;
+  font-family: monaco, Consolas, "Lucida Console", monospace;
+  letter-spacing: 0.5px;
+  margin: 0 0 24px;
+  text-align: center;
+
+}
+
+/* A simple “card” to hold the title + button (optional, works even if not added) */
+.auth-card {
+  background: radial-gradient(1200px 600px at 50% -20%, rgba(29, 185, 84, 0.08), transparent 60%),
+              radial-gradient(800px 400px at -20% 120%, rgba(255,255,255,0.06), transparent 50%);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  padding: 40px 32px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  max-width: 520px;
+  width: min(92vw, 520px);
+  text-align: center;
+}
+
+/* Button styled in Spotify green with soft glow */
+button#login {
+  --spotify: #1DB954;
+
+  appearance: none;
+  border: none;
+  border-radius: 9999px;
+  background: var(--spotify);
+  color: #000;
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 14px 22px;
+  cursor: pointer;
+
+  /* subtle depth + glow */
+  box-shadow:
+    0 6px 16px rgba(0,0,0,0.35),
+    0 0 0 0 rgba(29,185,84,0.35);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+/* Hover / focus states */
+button#login:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow:
+    0 10px 22px rgba(0,0,0,0.45),
+    0 0 0 8px rgba(29,185,84,0.12);
+  filter: brightness(1.02);
+}
+
+button#login:active {
+  transform: translateY(0) scale(0.99);
+  box-shadow:
+    0 6px 16px rgba(0,0,0,0.35),
+    0 0 0 4px rgba(29,185,84,0.18);
+}
+
+/* Keyboard accessibility */
+button#login:focus-visible {
+  outline: none;
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.4),
+    0 0 0 4px rgba(255,255,255,0.25),
+    0 0 0 8px rgba(29,185,84,0.45);
+}
+
+/* Small screens */
+@media (max-width: 420px) {
+  h1 { font-size: 1.35rem; }
+  button#login { width: 100%; }
+}
