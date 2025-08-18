@@ -109,14 +109,15 @@ async function displayImages(tracks) {
       img.height = 250;
       img.width = 250; 
       img.classList.add("fade-in");
-
-      await sleep(1000);
       container.appendChild(img);
+    };
+
+    for (const img of container.childNodes) {
+      await sleep(500);
       requestAnimationFrame(() => {
         img.classList.add("visible");
       });
-      
-    };
+    }
       
 }
 
