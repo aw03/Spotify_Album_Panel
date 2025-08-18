@@ -46,7 +46,7 @@ async function makePanel() {
   isLoading = false;
   let raw_tracks = await fetchRecentTracks(image_limit);
   recent_tracks = parseRecentTracks(raw_tracks);
-  displayImages(recent_tracks);
+  await displayImages(recent_tracks);
   setTimeout(makePanel, 60000);
 }
 
@@ -98,28 +98,33 @@ const parseRecentTracks = raw_tracks => {
     return tracks;
 }
 
-const displayImages = (tracks) => {
+async function displayImages(tracks) {
     const container = document.getElementById("image-container");
     container.innerHTML = "";
 
-    tracks.forEach(track => {
+    for (const track of tracks) {
       const img = document.createElement("img");
       img.src = track.img_url;
       img.alt = track.id;
       img.height = 250;
       img.width = 250; 
       img.classList.add("fade-in");
-      
+
+      await sleep(1000);
       container.appendChild(img);
       requestAnimationFrame(() => {
         img.classList.add("visible");
       });
-    });
+      
+    };
       
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
-const refreshToken = async () => {
+const refreshToken = async () => {  
 
   // refresh token that has been previously stored
   const refreshToken = JSON.stringify(token.refresh_token,null,2);

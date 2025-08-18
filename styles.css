@@ -28,8 +28,20 @@ body {
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 12px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* transition: transform 0.2s ease, box-shadow 0.2s ease; */
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    
+    transition: opacity .6s ease, transform 0.2s ease, box-shadow 0.2s ease;
+
+  }
+
+  .fade-in {
+    opacity: 0;
+  }
+  
+  /* once added, it will fade to full */
+  .fade-in.visible {
+    opacity: 1;
   }
   
   .gallery img:hover {
@@ -122,15 +134,4 @@ button#login:focus-visible {
 @media (max-width: 420px) {
   h1 { font-size: 1.35rem; }
   button#login { width: 100%; }
-}
-
-/* start transparent */
-.fade-in {
-  opacity: 0;
-  transition: opacity 1s ease; /* 0.6s fade */
-}
-
-/* once added, it will fade to full */
-.fade-in.visible {
-  opacity: 1;
 }
