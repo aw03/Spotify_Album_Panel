@@ -34,11 +34,21 @@ window.addEventListener("DOMContentLoaded", async () => {
     document.getElementById("recently-played-tracks").textContent += `Error Number: ${token.error.status}, Error Message: ${token.error.message}\n`;
     return;
   }
+  makePanel();
+  
+  // let raw_tracks = await fetchRecentTracks(image_limit);
+  // recent_tracks = parseRecentTracks(raw_tracks);
+  // displayImages(recent_tracks);
 
+});
+
+async function makePanel() {
+  isLoading = false;
   let raw_tracks = await fetchRecentTracks(image_limit);
   recent_tracks = parseRecentTracks(raw_tracks);
   displayImages(recent_tracks);
-});
+  setTimeout(makePanel, 60000);
+}
 
 async function fetchRecentTracks(limit, before = 0) {
     let url;
@@ -88,39 +98,23 @@ const parseRecentTracks = raw_tracks => {
     return tracks;
 }
 
-async function getRecentlyPlayedTracks(limit) {
-  let api_response;
-  let next_pointer = 0;
-  let tracks = {};
-  
-  while (Object.keys(tracks).length < image_limit)
-  {
-    api_response = await fetchRecentTracks(limit,next_pointer);
-    console.log(Object.keys(tracks).length);
-    console.log(next_pointer)
-    console.log(api_response)
-    next_pointer = api_response.cursors.before;
-    parseRecentTracks(api_response).forEach(track =>
-      {
-        if (!(track.id in tracks))
-        {
-          tracks[track.id] = track;
-        }
-      })
-    console.log(Object.keys(tracks).length);
-  }
-  return Object.values(tracks)
-}
-
 const displayImages = (tracks) => {
-      tracks.forEach(track => {
-        const img = document.createElement("img");
-        img.src = track.img_url;
-        img.alt = track.id;
-        img.height = 250;
-        img.width = 250; 
-        document.getElementById("image-container").appendChild(img);
+    const container = document.getElementById("image-container");
+    container.innerHTML = "";
+
+    tracks.forEach(track => {
+      const img = document.createElement("img");
+      img.src = track.img_url;
+      img.alt = track.id;
+      img.height = 250;
+      img.width = 250; 
+      img.classList.add("fade-in");
+      
+      container.appendChild(img);
+      requestAnimationFrame(() => {
+        img.classList.add("visible");
       });
+    });
       
 }
 
