@@ -2,7 +2,7 @@ const clientId =  "fa7e3da5eaf04cafae56a7e91d657d50";
 const redirectUri = "http://localhost:3000/panel";
 let token;
 let recent_tracks;
-const image_limit = 36;
+const image_limit = 32;
 
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -35,11 +35,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     return;
   }
   makePanel();
-  
-  // let raw_tracks = await fetchRecentTracks(image_limit);
-  // recent_tracks = parseRecentTracks(raw_tracks);
-  // displayImages(recent_tracks);
-
 });
 
 async function makePanel() {
@@ -113,7 +108,7 @@ async function displayImages(tracks) {
     };
 
     for (const img of container.childNodes) {
-      await sleep(500);
+      await sleep(150);
       requestAnimationFrame(() => {
         img.classList.add("visible");
       });
