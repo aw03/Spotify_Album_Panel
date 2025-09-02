@@ -1,5 +1,5 @@
 const clientId =  "fa7e3da5eaf04cafae56a7e91d657d50";
-const redirectUri = "http://localhost:3000/panel";
+const redirectUri = "https://aw03.github.io/Spotify_Album_Panel/panel";
 let token;
 let recent_tracks;
 const image_limit = 32;
