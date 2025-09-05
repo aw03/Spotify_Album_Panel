@@ -42,7 +42,7 @@ async function makePanel() {
   let raw_tracks = await fetchRecentTracks(image_limit);
   recent_tracks = parseRecentTracks(raw_tracks);
   await displayImages(recent_tracks);
-  setTimeout(makePanel, 60000);
+  setTimeout(makePanel, 180000);
 }
 
 async function fetchRecentTracks(limit, before = 0) {
@@ -123,7 +123,7 @@ function sleep(ms) {
 const refreshToken = async () => {  
 
   // refresh token that has been previously stored
-  const refreshToken = JSON.stringify(token.refresh_token,null,2);
+  const refreshToken = token.refresh_token;
   const url = "https://accounts.spotify.com/api/token";
 
     const payload = {
